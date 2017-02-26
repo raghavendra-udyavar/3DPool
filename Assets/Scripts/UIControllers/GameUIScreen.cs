@@ -91,14 +91,6 @@ namespace KsubakaPool.UIControllers
                 _pausePageGo.SetActive(true);
                 _quitButtonGo.SetActive(true);
 
-                // reset score message
-                PlayerUIController[] playerUIControllers = _playerGridGroup.GetComponentsInChildren<PlayerUIController>();
-                if (playerUIControllers != null && playerUIControllers.Length > 0)
-                {
-                    foreach(var playerUIController in playerUIControllers)
-                        playerUIController.NameNScore.text = playerUIController.gameObject.name + " " + 0;
-                }
-
                 StartCoroutine(ClearWinningMessage());
             }
             else {
@@ -175,6 +167,14 @@ namespace KsubakaPool.UIControllers
 
             if (GameManager.Instance.PrevGameState == GameManager.GameState.Practise)
             {
+                // reset score message
+                PlayerUIController[] playerUIControllers = _playerGridGroup.GetComponentsInChildren<PlayerUIController>();
+                if (playerUIControllers != null && playerUIControllers.Length > 0)
+                {
+                    foreach (var playerUIController in playerUIControllers)
+                        playerUIController.NameNScore.text = playerUIController.gameObject.name + " " + 0;
+                }
+
                 GameManager.Instance.OnPlay();
 
                 if (GameManager.Instance.NumOfTimesPlayed == 1)
