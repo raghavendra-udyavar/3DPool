@@ -8,6 +8,12 @@ using KsubakaPool.UIControllers;
 
 namespace KsubakaPool.Managers
 {
+    /// <summary>
+    /// This class is a rule manager for this pool game
+    /// decides on the players playing
+    /// calculates score and decides the fate of the ball and the players after each turn
+    /// 
+    /// </summary>
     public class GameManager : Singleton<GameManager>
     {
         public enum GameType
@@ -94,58 +100,6 @@ namespace KsubakaPool.Managers
 
         }
 
-        public void ChangeGameState(GameState newGameState)
-        {
-            // making sure that the prev game state is actually the prev game state
-            if(newGameState != _currGameState)
-            {
-                _prevGameState = _currGameState;
-                _currGameState = newGameState;
-            }
-        }
-
-        public void OnGetSet()
-        {
-            ChangeGameState(GameState.GetSet);
-        }
-
-        public void OnPlay()
-        {
-            // make sure we start with clear list
-            _ballsHitOut.Clear();
-            _ballsPocketed.Clear();
-
-            NumOfBallsStriked = 0;
-
-            NumOfTimesPlayed++;
-
-            foreach (var player in _players)
-                player.ResetScore();
-
-            ChangeGameState(GameState.Play);
-
-            // place the cue ball in position
-            _cueBall.PlaceBallInInitialPos();
-
-            if (!_ballsInstantiated)
-            {
-                // place the ball in the rack position
-                PlaceBallBasedOnGameType();
-
-                _ballsInstantiated = true;
-            }
-        }
-
-        public void OnPaused()
-        {
-            ChangeGameState(GameState.Pause);
-        }
-
-        public void OnContinue()
-        {
-            ChangeGameState(GameState.Play);
-        }
-
         /// <summary>
         /// This function places the ball based on the game type
         /// There are prefabs created in a order to make the placement easy based on the selected game type
@@ -156,29 +110,43 @@ namespace KsubakaPool.Managers
             Instantiate((Resources.Load(_gameType.ToString() + rackString, typeof(GameObject)) as GameObject), _rackTransform.position, _rackTransform.rotation);
         }
 
-        // this function will be called by cueball when they come to rest after the shot is taken
-        public void ReadyForNextRound()
+        private bool IsGameComplete()
         {
-            // lets allow the player to take some shot while the game is not started yet
-            if (CurrGameState == GameState.Practise)
-            {
-                // white ball might be pocketed or hit out
-                // since there is only white before the Play state dont have to check for the ball type, just see which array has the ball object
-                _cueBall.PlaceBallInPosWhilePractise();
-            }
-            // pause is added to just make sure its ready for next round
-            else if(CurrGameState == GameState.Play || CurrGameState == GameState.Pause)
-            {
-                NumOfBallsStriked--;
+            if (_ballsPocketed.Count() == (int)_gameType)
+                return true;
 
-                // all the balls in the pool table are now stationary, let the game continue
-                if (NumOfBallsStriked == 0)
-                    CalculateThePointAndNextTurn();
-            }
-            else
+            return false;
+        }
+
+        private IEnumerator OnGameComplete()
+        {
+            yield return new WaitForEndOfFrame();
+
+            int winningScore = 0;
+
+            // get the highest score
+            foreach (var player in _players)
             {
-                // do nothing
+                if (player.Score >= winningScore)
+                    winningScore = player.Score;
             }
+
+            // now that we have found the winning score, check if there is anyone else with the same score
+            Winners = _players.Where(p => p.Score == winningScore).Select(p => p.Name).ToArray();
+
+            // give enough time for the ball, cue and camera to return back to its original position
+            EventManager.Notify(typeof(GameStateEvent).Name, this, new GameStateEvent() { GameState = GameStateEvent.State.Complete });
+        }
+
+        private void SetNewPlayerTurn()
+        {
+            // next player takes the chance
+            Player player = _players.Dequeue();
+            _players.Enqueue(player);
+
+            // get the player on peek to diplay the turn
+            Player newPlayer = _players.Peek();
+            EventManager.Notify(typeof(GameStateEvent).Name, this, new GameStateEvent() { CurrPlayer = newPlayer.Name });
         }
 
         private void CalculateThePointAndNextTurn()
@@ -232,7 +200,6 @@ namespace KsubakaPool.Managers
                         {
                             SetNewPlayerTurn();
                         }
-
                     }
                     else
                     {
@@ -249,59 +216,96 @@ namespace KsubakaPool.Managers
             _ballsHitOut.Clear();
 
             // reset players state
-            foreach(var player in _players)
+            foreach (var player in _players)
             {
-                // here we are checking if the current player in iteration is the first player and setting the state accordingly
+                // checking if the current player in iteration is the first player and setting the state accordingly
                 // only the first player in the queue is in playing state
+                // note: state is set based on the condition
                 player.SetPlayingState((player == _players.Peek()));
             }
 
+            // check if all balls in the game are pocketed
             if (IsGameComplete())
-            {
                 StartCoroutine(OnGameComplete());
-            }
-            else {
+            else
                 EventManager.Notify(typeof(CueBallActionEvent).Name, this, new CueBallActionEvent() { State = CueBallActionEvent.States.Stationary });
-            }
         }
 
-        private bool IsGameComplete()
+        public void ChangeGameState(GameState newGameState)
         {
-            if (_ballsPocketed.Count() == (int)_gameType)
-                return true;
-
-            return false;
-        }
-
-        private IEnumerator OnGameComplete()
-        {
-            yield return new WaitForEndOfFrame();
-
-            int winningScore = 0;
-
-            // check the highest scorer
-            foreach (var player in _players)
+            // making sure that the prev game state is actually the prev game state
+            if(newGameState != _currGameState)
             {
-                if (player.Score >= winningScore)
-                    winningScore = player.Score;
+                _prevGameState = _currGameState;
+                _currGameState = newGameState;
             }
-
-            // now that we have found the winning score, check if there is anyone else with the same score
-            Winners = _players.Where(p => p.Score == winningScore).Select(p => p.Name).ToArray();
-
-            // give enough time for the ball, cue and camera to return back to its original position
-            EventManager.Notify(typeof(GameStateEvent).Name, this, new GameStateEvent() { GameState = GameStateEvent.State.Complete });
         }
 
-        private void SetNewPlayerTurn()
+        public void OnGetSet()
         {
-            // next player takes the chance
-            Player player = _players.Dequeue();
-            _players.Enqueue(player);
+            ChangeGameState(GameState.GetSet);
+        }
 
-            // get the player on peek to diplay the turn
-            Player newPlayer = _players.Peek();
-            EventManager.Notify(typeof(GameStateEvent).Name, this, new GameStateEvent() { CurrPlayer = newPlayer.Name });
+        public void OnPlay()
+        {
+            // make sure we start with clear list
+            _ballsHitOut.Clear();
+            _ballsPocketed.Clear();
+
+            NumOfBallsStriked = 0;
+
+            NumOfTimesPlayed++;
+
+            foreach (var player in _players)
+                player.ResetScore();
+
+            ChangeGameState(GameState.Play);
+
+            // place the cue ball in position
+            _cueBall.PlaceBallInInitialPos();
+
+            if (!_ballsInstantiated)
+            {
+                // place the ball in the rack position
+                PlaceBallBasedOnGameType();
+
+                _ballsInstantiated = true;
+            }
+        }
+
+        public void OnPaused()
+        {
+            ChangeGameState(GameState.Pause);
+        }
+
+        public void OnContinue()
+        {
+            ChangeGameState(GameState.Play);
+        }
+
+        // this function will be called by cueball when they come to rest after the shot is taken
+        public void ReadyForNextRound()
+        {
+            // lets allow the player to take some shot while the game is not started yet
+            if (CurrGameState == GameState.Practise)
+            {
+                // white ball might be pocketed or hit out
+                // since there is only white before the Play state dont have to check for the ball type, just see which array has the ball object
+                _cueBall.PlaceBallInPosWhilePractise();
+            }
+            // pause is added to just make sure its ready for next round
+            else if(CurrGameState == GameState.Play || CurrGameState == GameState.Pause)
+            {
+                NumOfBallsStriked--;
+
+                // all the balls in the pool table are now stationary, let the game continue
+                if (NumOfBallsStriked == 0)
+                    CalculateThePointAndNextTurn();
+            }
+            else
+            {
+                // do nothing
+            }
         }
 
         public void AddToBallPocketedList(CueBallController ball)

@@ -46,8 +46,6 @@ namespace KsubakaPool.UIControllers
 
         private void OnScoreUpdate(object sender, IGameEvent gameEvent)
         {
-            ScoreUpdateEvent scoreUpdateEvent = (ScoreUpdateEvent)gameEvent;
-
             try {
                 // since the score update is made by the player, the sender of this event should be the player
                 Player player = (Player)sender;

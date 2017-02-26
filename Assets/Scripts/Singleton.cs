@@ -16,7 +16,7 @@ namespace KsubakaPool
                     string typeName = typeof(T).Name;
 
                     // find the object name
-                    GameObject _instanceGO = GameObject.Find(typeName);
+                    _instanceGO = GameObject.Find(typeName);
                     _instance = _instanceGO.GetComponent<T>();
 
                     // making sure that there is only one object of this type at anytime

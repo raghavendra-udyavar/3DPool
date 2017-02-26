@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using KsubakaPool.EventHandlers;
+﻿using KsubakaPool.EventHandlers;
 using KsubakaPool.Managers;
 
 namespace KsubakaPool
@@ -10,7 +9,8 @@ namespace KsubakaPool
         public int Score { private set; get; }
 
         public bool HasStrikedBall { private set; get; }
-        public bool _isPlaying;
+
+        private bool _isPlaying;
 
         public Player(string name)
         {

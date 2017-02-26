@@ -111,6 +111,7 @@ namespace KsubakaPool.Controllers
         private void OnCueBallEvent(object sender, IGameEvent gameEvent)
         {
             CueBallActionEvent cueBallActionEvent = (CueBallActionEvent)gameEvent;
+
             // start moving the cue stick towards the ball
             switch (cueBallActionEvent.State)
             {
