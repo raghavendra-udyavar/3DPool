@@ -106,8 +106,12 @@ namespace KsubakaPool.Managers
         /// </summary>
         private void PlaceBallBasedOnGameType()
         {
-            string rackString = "Rack";
-            Instantiate((Resources.Load(_gameType.ToString() + rackString, typeof(GameObject)) as GameObject), _rackTransform.position, _rackTransform.rotation);
+            // just cue doesnt place any balls in the table except for the cueball
+            if (_gameType != GameType.JustCue)
+            {
+                string rackString = "Rack";
+                Instantiate((Resources.Load(_gameType.ToString() + rackString, typeof(GameObject)) as GameObject), _rackTransform.position, _rackTransform.rotation);
+            }
         }
 
         private bool IsGameComplete()
