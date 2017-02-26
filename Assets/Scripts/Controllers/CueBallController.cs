@@ -6,21 +6,6 @@ namespace KsubakaPool.Controllers
 {
     public class CueBallController : MonoBehaviour
     {
-        [SerializeField]
-        float _force = 30f;
-
-        [SerializeField]
-        CueBallType _ballType = CueBallType.White;
-
-        // keep track of the current event
-        private CueBallActionEvent.States _currState;
-
-        private Vector3 _initialPos;
-
-        public bool IsPocketedInPrevTurn;
-
-        public CueBallType BallType { get { return _ballType; } }
-
         public enum CueBallType
         {
             White = 0,
@@ -40,6 +25,24 @@ namespace KsubakaPool.Controllers
             Striped_Green,
             Striped_Burgandy,
         }
+
+        [SerializeField]
+        float _force = 30f;
+
+        [SerializeField]
+        CueBallType _ballType = CueBallType.White;
+
+        // keep track of the current event
+        private CueBallActionEvent.States _currState;
+
+        private Vector3 _initialPos;
+
+        // flag that diffrentiates between the ball that is pocketed in the current turn versus ball that is pocketed in the earlier turn
+        // this helps in scoring
+        public bool IsPocketedInPrevTurn;
+
+        public CueBallType BallType { get { return _ballType; } }
+
 
         private void Start()
         {
@@ -122,7 +125,10 @@ namespace KsubakaPool.Controllers
             }
         }
 
-        void FixedUpdate()
+        /// <summary>
+        /// ball goes through various lifecycle from default, placing to the coming back to stationary state after been striked
+        /// </summary>
+        private void FixedUpdate()
         {
             Rigidbody rigidbody = gameObject.GetComponent<Rigidbody>();
             if ((_currState == CueBallActionEvent.States.Placing) && rigidbody.IsSleeping())
@@ -131,9 +137,10 @@ namespace KsubakaPool.Controllers
             }
             else if ((_currState == CueBallActionEvent.States.Default) && (!rigidbody.IsSleeping()))
             {
-                // check for number of balls striked in Play mode
+                // number of balls striked in Play mode
                 if (GameManager.Instance.CurrGameState == GameManager.GameState.Play)
                     GameManager.Instance.NumOfBallsStriked++;
+
                 _currState = CueBallActionEvent.States.Striked;
             }
             else if ((_currState == CueBallActionEvent.States.Striked) && (!rigidbody.IsSleeping()))
@@ -146,7 +153,9 @@ namespace KsubakaPool.Controllers
             }
             else if ((_currState == CueBallActionEvent.States.InMotion) && rigidbody.IsSleeping())
             {
+                // ball is come to rest after been striked, check for the status
                 GameManager.Instance.ReadyForNextRound();
+
                 _currState = CueBallActionEvent.States.Stationary;
             }
             else
@@ -159,7 +168,7 @@ namespace KsubakaPool.Controllers
         /// OnStriked by Cue
         /// </summary>
         /// <param name="forceGathered">amount of force applied on the cue ball</param>
-        void OnStriked(float forceGathered)
+        private void OnStriked(float forceGathered)
         {
             // only apply force on the white ball
             if (_ballType == CueBallType.White)
@@ -179,17 +188,28 @@ namespace KsubakaPool.Controllers
             GameManager.Instance.AddToBallPocketedList(this);
         }
 
+        /// <summary>
+        /// this function is called only while in practise mode
+        /// </summary>
         public void PlaceBallInPosWhilePractise()
         {
             PlaceBallInInitialPos();
+
             EventManager.Notify(typeof(CueBallActionEvent).Name, this, new CueBallActionEvent() { State = CueBallActionEvent.States.Stationary });
         }
 
+        /// <summary>
+        /// this function is been called whenever there is a reset of p
+        /// </summary>
         public void PlaceBallInInitialPos()
         {
-            // lets place it a bit from top so that balls dont get placed within each other
+            // place it a bit from top so that balls dont get placed within each other
             transform.position = new Vector3(_initialPos.x, _initialPos.y + 0.2f, _initialPos.z);
+
+            // this flag resets after the completion of one complete round,
+            // since the function is reused, and whenever there is a reset, it is safe to reset the flag here
             IsPocketedInPrevTurn = false;
+
             _currState = CueBallActionEvent.States.Placing;
             GameManager.Instance.NumOfBallsStriked = 0;
         }
