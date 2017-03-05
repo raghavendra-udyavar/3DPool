@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace KsubakaPool.States
+namespace ThreeDPool.States
 {
     public class TakeAShotState : IState
     {

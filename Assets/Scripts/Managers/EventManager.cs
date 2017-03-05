@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using KsubakaPool.EventHandlers;
+using ThreeDPool.EventHandlers;
 using UnityEngine;
 
-namespace KsubakaPool.Managers
+namespace ThreeDPool.Managers
 {
     /// <summary>
     /// the responsibility of this class is to register for events and dispath them

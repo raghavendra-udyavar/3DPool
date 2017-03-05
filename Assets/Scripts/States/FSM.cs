@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace KsubakaPool.States
+namespace ThreeDPool.States
 {
     public class FSM :  MonoBehaviour
     {

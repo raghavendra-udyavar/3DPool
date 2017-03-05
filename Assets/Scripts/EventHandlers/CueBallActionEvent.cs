@@ -1,5 +1,5 @@
 ﻿
-namespace KsubakaPool.EventHandlers
+namespace ThreeDPool.EventHandlers
 {
     public struct CueBallActionEvent : IGameEvent
     {

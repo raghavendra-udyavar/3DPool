@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
-using KsubakaPool.EventHandlers;
-using KsubakaPool.Managers;
+using ThreeDPool.EventHandlers;
+using ThreeDPool.Managers;
 
-namespace KsubakaPool.Controllers
+namespace ThreeDPool.Controllers
 {
     public class CameraController : MonoBehaviour
     {

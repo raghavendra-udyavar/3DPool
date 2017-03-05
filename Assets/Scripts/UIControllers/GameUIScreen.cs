@@ -3,10 +3,10 @@ using System.Collections;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using KsubakaPool.EventHandlers;
-using KsubakaPool.Managers;
+using ThreeDPool.EventHandlers;
+using ThreeDPool.Managers;
 
-namespace KsubakaPool.UIControllers
+namespace ThreeDPool.UIControllers
 {
     public class GameUIScreen : MonoBehaviour
     {

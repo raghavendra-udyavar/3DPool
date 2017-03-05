@@ -1,5 +1,5 @@
 ﻿
-namespace KsubakaPool.EventHandlers
+namespace ThreeDPool.EventHandlers
 {
     public class GameStateEvent : IGameEvent
     {

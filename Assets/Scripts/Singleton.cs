@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace KsubakaPool
+namespace ThreeDPool
 {
     public class Singleton<T> : MonoBehaviour where T : Singleton<T>
     {

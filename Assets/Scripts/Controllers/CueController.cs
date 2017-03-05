@@ -1,9 +1,9 @@
 ﻿using System.Collections;
-using KsubakaPool.Managers;
-using KsubakaPool.EventHandlers;
+using ThreeDPool.Managers;
+using ThreeDPool.EventHandlers;
 using UnityEngine;
 
-namespace KsubakaPool.Controllers
+namespace ThreeDPool.Controllers
 {
     class CueController : MonoBehaviour
     {

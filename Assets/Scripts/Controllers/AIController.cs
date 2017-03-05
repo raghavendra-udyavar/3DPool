@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace KsubakaPool.Controllers
+namespace ThreeDPool.Controllers
 {
     public class AIController : MonoBehaviour
     {

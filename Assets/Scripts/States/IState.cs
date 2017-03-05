@@ -1,5 +1,5 @@
 ﻿
-namespace KsubakaPool.States
+namespace ThreeDPool.States
 {
     public interface IState
     {

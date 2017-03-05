@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace KsubakaPool.States
+namespace ThreeDPool.States
 {
     /// <summary>
     /// This is the state where the players are waiting for thier chance 

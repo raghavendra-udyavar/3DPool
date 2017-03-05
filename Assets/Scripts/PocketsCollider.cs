@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
-using KsubakaPool.Controllers;
+using ThreeDPool.Controllers;
 
-namespace KsubakaPool
+namespace ThreeDPool
 {
     class PocketsCollider : MonoBehaviour
     {

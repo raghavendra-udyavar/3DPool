@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using KsubakaPool.EventHandlers;
-using KsubakaPool.Controllers;
-using KsubakaPool.UIControllers;
+using ThreeDPool.EventHandlers;
+using ThreeDPool.Controllers;
+using ThreeDPool.UIControllers;
 
-namespace KsubakaPool.Managers
+namespace ThreeDPool.Managers
 {
     /// <summary>
     /// This class is a rule manager for this pool game

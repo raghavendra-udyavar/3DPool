@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
-using KsubakaPool.Controllers;
-using KsubakaPool.Managers;
+using ThreeDPool.Controllers;
+using ThreeDPool.Managers;
 
-namespace KsubakaPool
+namespace ThreeDPool
 {
     public class TableWallCollider : MonoBehaviour
     {

@@ -1,7 +1,7 @@
-﻿using KsubakaPool.EventHandlers;
-using KsubakaPool.Managers;
+﻿using ThreeDPool.EventHandlers;
+using ThreeDPool.Managers;
 
-namespace KsubakaPool
+namespace ThreeDPool
 {
     public class Player
     {
