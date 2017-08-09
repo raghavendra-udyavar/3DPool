@@ -1,6 +1,10 @@
 # 3DPool
 A simple 3DPool game demo developed on Unity3D.
 
+```PowerShell
+Play Pool
+```
+
 ## Developed by Raghavendra Udyavar
 This game was developed to demonstrate some Unity development principles and techniques to setup the unity scene. The scripting language chosen is C#. Demonstrates the basic single-reponsibility principles, Event driven, Singleton Design pattern.
 
